@@ -8,16 +8,16 @@ public class Dist {
         Thread tr[] = new Thread[4];
         
         long startTimeThread=System.nanoTime();
-        tr[0]=new Thread(new DistributedFactorial(10000,7501,res_thread,0));
+        tr[0]=new Thread(new DistributedFactorial(100000,81001,res_thread,0));
         tr[0].start();
 
-        tr[1]=new Thread(new DistributedFactorial(7500,5001,res_thread,1));
+        tr[1]=new Thread(new DistributedFactorial(81000,59001,res_thread,1));
         tr[1].start();
 
-        tr[2]=new Thread(new DistributedFactorial(5000,2501,res_thread,2));
+        tr[2]=new Thread(new DistributedFactorial(59000,36001,res_thread,2));
         tr[2].start();
 
-        tr[3]=new Thread(new DistributedFactorial(2500,0,res_thread,3));
+        tr[3]=new Thread(new DistributedFactorial(36000,0,res_thread,3));
         tr[3].start();
 
         try{

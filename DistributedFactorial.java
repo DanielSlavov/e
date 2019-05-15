@@ -34,7 +34,17 @@ public class DistributedFactorial implements Runnable{
         return fact(n-1,m).multiply(BigInteger.valueOf(n));
 
     }
+    private static BigInteger factIter(int n ,int m){
+        BigInteger result=BigInteger.valueOf(1);
+        for(int i=m;i<=n;i++){
+            result=result.multiply(BigInteger.valueOf(i));
+        }
+            
+        return result;
+
+    }
+
     public void run() {
-        res[num]=fact(this.start,this.end);
+        res[num]=factIter(this.start,this.end);
     }
 }

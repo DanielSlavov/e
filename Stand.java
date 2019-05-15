@@ -5,7 +5,7 @@ public class Stand {
 
     public static void main(String[] args) {
         BigInteger res[]=new BigInteger[1];
-        DistributedFactorial df = new DistributedFactorial(10000, 0, res,0);
+        DistributedFactorial df = new DistributedFactorial(100000, 0, res,0);
 
         long startTime=System.nanoTime();
         df.run();
