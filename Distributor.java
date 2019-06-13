@@ -1,40 +1,70 @@
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 
-public class Distributor{
+public class Distributor {
+    private int n;
+    private double gran;
+    private boolean logs;
+    private int threadCount;
+    private Thread threads[];
+    public BigDecimal results[];
+    public BigInteger factorials[];
+    public BigDecimal result;
 
-    private static void distribute(int n,int m,int threads,int args[]){
-        for(int i=0;i<=threads;i++){
-            args[threads-i]=m+(int)Math.ceil((n-m)*((double)i/threads));
-        }
-        //args[0]=m-1;
+    public Distributor(int n, int threadCount, double gran,boolean logs) {
+        this.logs=logs;
+        this.n = n;
+        this.gran = gran;
+        this.threadCount = threadCount;
+        this.results = new BigDecimal[threadCount];
+        this.factorials = new BigInteger[threadCount];
+        this.threads = new Thread[threadCount];
+        this.result = BigDecimal.valueOf(0);
     }
 
-    public static BigInteger DistributedFactorial(int n,int m,int threadNum){
-        while(n<2*threadNum && threadNum>1){
-            threadNum=(int)Math.ceil((double)threadNum/2);
+    public BigDecimal Distribute() {
+        int chunk= (int)(n*gran);
 
-        }
-        int args[]=new int[threadNum+1];
-        distribute(n,m-1,threadNum,args);
-        BigInteger res[]=new BigInteger[threadNum];
-
-        Thread threads[]=new Thread[threadNum];
-        for(int i=0;i<threadNum;i++){
-            threads[i]=new Thread(new Factorial(args[i],args[i+1]+1,res,i));
-            threads[i].start();
-        }
-
-        try{
-            threads[0].join();
-            for(int i=1;i<threadNum;i++){
-                threads[i].join();
-                res[0]=res[0].multiply(res[i]);
+        for(int k=0;k<=n/chunk;k++){
+            
+            for (int i = 0; i < threadCount  ;i++) {
+                if(k!=0){
+                    try{
+                        threads[i].join();
+                        if(logs)
+                        System.out.println("Thread "+i+" finished");
+                    }catch(Exception e){
+                        System.out.println("Error");
+                    }
+                    if(i!=0){
+                    factorials[i] = factorials[i].multiply(factorials[i - 1]);
+                    result=result.add(results[i].divide(new BigDecimal(factorials[i - 1]),n,RoundingMode.HALF_EVEN));
+                    }
+                    else if(k!=1){
+                        factorials[i] = factorials[i].multiply(factorials[threadCount - 1]);
+                        result=result.add(results[i].divide(new BigDecimal(factorials[threadCount - 1]),n,RoundingMode.HALF_EVEN));
+                    }else{
+                        result=results[0];
+                    }
+                }
+                if( chunk*k + (double)(chunk*(i / threadCount)) > n ){
+                    // System.out.println("breaked");
+                     break;
+                }
+                if(k<n/chunk){
+                int start = chunk*k + i*chunk* 1 / threadCount;
+                int end = chunk*k + (i+1)*chunk*1/ threadCount;
+                threads[i] = new Thread(new RangedESum(start, end, n, results, factorials, i));
+                threads[i].start();
+                if(logs)
+                System.out.println("Thread "+i+" started: "+(start + "  -  "+end));}
             }
-        }catch(Exception e){}
+        }
 
 
-        return res[0];
+                
+        return result;
+
     }
-
-
 }
